@@ -71,6 +71,7 @@ class Track:
         self.hits = 1
         self.age = 1
         self.time_since_update = 0
+        self.firstX = mean[0]
 
         self.state = TrackState.Tentative
         self.features = []
@@ -109,7 +110,7 @@ class Track:
         ret = self.to_tlwh()
         ret[2:] = ret[:2] + ret[2:]
         return ret
-    
+
     def get_class(self):
         return self.class_name
 
@@ -123,6 +124,7 @@ class Track:
             The Kalman filter.
 
         """
+
         self.mean, self.covariance = kf.predict(self.mean, self.covariance)
         self.age += 1
         self.time_since_update += 1
