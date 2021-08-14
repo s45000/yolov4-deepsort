@@ -47,6 +47,9 @@ class Tracker:
         self.tracks = []
         self._next_id = 1
 
+        self.borderline = 0.0
+        self.nowN = 0
+
     def predict(self):
         """Propagate track state distributions one time step forward.
 
@@ -76,6 +79,21 @@ class Tracker:
             self.tracks[track_idx].mark_missed()
         for detection_idx in unmatched_detections:
             self._initiate_track(detections[detection_idx])
+        # 트랙들이 삭제되기전에 마지막 x위치로 나가는 위치 확인
+        for t in self.tracks:
+            if t.is_deleted():
+                # 삭제된 트랙 id
+                print("///////////////////////////////"+str(t.track_id))
+                if t.firstX < self.borderline and self.borderline < t.mean[0]:
+                    self.nowN += 1
+                    # 오른쪽으로 들어온 트랙 id
+                    print("+++++++++++++++++++++++++++++"+str(t.track_id))
+                elif t.mean[0] <self.borderline and self.borderline < t.firstX:
+                    self.nowN -= 1
+                    # 왼쪽으로 나간 트랙 id
+                    print("-----------------------------"+str(t.track_id))
+                
+
         self.tracks = [t for t in self.tracks if not t.is_deleted()]
 
         # Update distance metric.
